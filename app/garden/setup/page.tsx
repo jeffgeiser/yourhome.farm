@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ProfileDropdown } from '@/components/profile-dropdown';
+import { ProfileDropdown } from '@/app/components/profile-dropdown';
 import { Database } from '@/types/supabase';
 
 type GardenFormData = Database['public']['Tables']['gardens']['Insert'];
