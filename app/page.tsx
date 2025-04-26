@@ -1,153 +1,108 @@
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight, Leaf, Sun, Cloud, Calendar, Star } from 'lucide-react';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Leaf, Calendar, Droplets, Sun, ArrowRight } from 'lucide-react';
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Hero Section with Garden Background */}
-      <section 
-        className="w-full min-h-screen bg-[url('https://images.pexels.com/photos/1002703/pexels-photo-1002703.jpeg')] bg-cover bg-center"
-      >
-        <div className="container px-4 md:px-6 mx-auto relative min-h-screen flex items-center">
-          <div className="absolute inset-0 bg-black/30"></div>
-          <div className="flex flex-col items-start space-y-4 relative max-w-[600px]">
-            <div className="space-y-4">
-              <h1 className="text-6xl font-bold tracking-tighter text-white">
-                Your Garden,{' '}
-                <span className="text-[#90C290]">Smarter</span>
-              </h1>
-              <p className="text-xl text-gray-100">
-                Transform your home garden with AI-powered insights, personalized
-                planning tools, and real-time weather alerts. Grow more with less effort.
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 mt-8">
-              <Button asChild size="lg" className="bg-[#4CAF50] hover:bg-[#388E3C] text-white font-bold">
-                <Link href="/signup">
-                  Get Started <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="link" size="lg" className="text-white hover:text-gray-200">
-                <Link href="/login">
-                  Already have an account?
-                </Link>
-              </Button>
-            </div>
+      {/* Hero Section */}
+      <section className="relative h-[80vh] flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute inset-0 bg-[url('/images/garden-bg.jpg')] bg-cover bg-center opacity-20" />
+        </div>
+        <div className="container mx-auto px-4 z-10 text-center">
+          <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
+            Grow Your Garden
+            <span className="text-green-600"> Smarter</span>
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Your personal garden management assistant. Track plants, get care reminders, and grow your garden with confidence.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button asChild size="lg" className="bg-green-600 hover:bg-green-700 text-white">
+              <Link href="/signup">
+                Get Started
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="/login">
+                Sign In
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="w-full py-12 md:py-24 bg-white">
-        <div className="container px-4 md:px-6 mx-auto">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 bg-white shadow-sm">
-              <div className="p-2 bg-green-100 rounded-full">
-                <Leaf className="h-6 w-6 text-[#4CAF50]" />
-              </div>
-              <h3 className="text-xl font-bold">Personalized Plant Care</h3>
-              <p className="text-center text-gray-600">
-                AI-generated care instructions based on your specific garden and plants.
-              </p>
-            </div>
-            <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 bg-white shadow-sm">
-              <div className="p-2 bg-blue-100 rounded-full">
-                <Cloud className="h-6 w-6 text-[#007BFF]" />
-              </div>
-              <h3 className="text-xl font-bold">Weather Alerts</h3>
-              <p className="text-center text-gray-600">
-                Get notified about frost, excessive heat, or other weather events that affect your garden.
-              </p>
-            </div>
-            <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 bg-white shadow-sm">
-              <div className="p-2 bg-amber-100 rounded-full">
-                <Calendar className="h-6 w-6 text-amber-600" />
-              </div>
-              <h3 className="text-xl font-bold">Garden Calendar</h3>
-              <p className="text-center text-gray-600">
-                Keep track of planting dates, tasks, and harvests with an easy-to-use calendar.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            Everything You Need to Grow
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+              <CardHeader>
+                <div className="bg-green-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
+                  <Leaf className="h-6 w-6 text-green-600" />
+                </div>
+                <CardTitle>Plant Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Track all your plants in one place. Get personalized care instructions and growth tracking.
+                </p>
+              </CardContent>
+            </Card>
 
-      {/* Testimonials Section */}
-      <section className="w-full py-12 md:py-24 bg-gray-50">
-        <div className="container px-4 md:px-6 mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">What Our Gardeners Say</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="flex items-center mb-4">
-                <div className="flex text-yellow-400">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-current" />
-                  ))}
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+              <CardHeader>
+                <div className="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
+                  <Calendar className="h-6 w-6 text-blue-600" />
                 </div>
-              </div>
-              <p className="text-gray-600 mb-4">
-                "The AI recommendations have transformed my garden. I've never had such healthy plants and abundant harvests!"
-              </p>
-              <div className="text-sm">
-                <p className="font-semibold">Sarah Johnson</p>
-                <p className="text-gray-500">Urban Gardener</p>
-              </div>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="flex items-center mb-4">
-                <div className="flex text-yellow-400">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-current" />
-                  ))}
+                <CardTitle>Smart Scheduling</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Never miss a watering or fertilizing schedule. Get AI-powered care reminders.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+              <CardHeader>
+                <div className="bg-amber-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
+                  <Droplets className="h-6 w-6 text-amber-600" />
                 </div>
-              </div>
-              <p className="text-gray-600 mb-4">
-                "The weather alerts have saved my plants multiple times. This app is a must-have for any serious gardener."
-              </p>
-              <div className="text-sm">
-                <p className="font-semibold">Michael Chen</p>
-                <p className="text-gray-500">Home Grower</p>
-              </div>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="flex items-center mb-4">
-                <div className="flex text-yellow-400">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-current" />
-                  ))}
-                </div>
-              </div>
-              <p className="text-gray-600 mb-4">
-                "As a beginner, this app has given me the confidence to start and maintain my first vegetable garden."
-              </p>
-              <div className="text-sm">
-                <p className="font-semibold">Emily Rodriguez</p>
-                <p className="text-gray-500">Novice Gardener</p>
-              </div>
-            </div>
+                <CardTitle>Weather Alerts</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Get notified about weather conditions that might affect your plants.
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="w-full py-12 md:py-24 bg-[#4CAF50] text-white">
-        <div className="container px-4 md:px-6 mx-auto">
-          <div className="flex flex-col items-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
-                Ready to grow your best garden yet?
-              </h2>
-              <p className="mx-auto max-w-[600px] text-white/80 md:text-xl">
-                Join thousands of gardeners using AI to grow better.
-              </p>
-            </div>
-            <Button asChild size="lg" className="bg-white text-[#4CAF50] hover:bg-gray-100 font-bold">
-              <Link href="/signup">
-                Start Your Garden Journey Today
-              </Link>
-            </Button>
-          </div>
+      <section className="py-20 bg-green-50">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Ready to Grow Your Garden?
+          </h2>
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Join thousands of gardeners who are growing smarter with our platform.
+          </p>
+          <Button asChild size="lg" className="bg-green-600 hover:bg-green-700 text-white">
+            <Link href="/signup">
+              Start Your Garden Journey
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </Button>
         </div>
       </section>
     </div>
