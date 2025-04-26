@@ -114,199 +114,150 @@ export default function GardenSetup() {
           </p>
         </div>
 
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Sprout className="h-5 w-5 text-primary-600" />
-              Garden Location
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <form onSubmit={handleSubmit}>
+          {error && (
+            <Alert variant="destructive" className="mb-6">
+              {error}
+            </Alert>
+          )}
+
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sprout className="h-5 w-5 text-primary-600" />
+                Garden Location
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="garden-name">Garden Name</Label>
+                    <Input
+                      id="garden-name"
+                      placeholder="e.g., Backyard Garden"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="location">Location</Label>
+                    <Input
+                      id="location"
+                      placeholder="e.g., Aldie, VA"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="garden-name">Garden Name</Label>
+                  <Label htmlFor="garden-size">Garden Size</Label>
                   <Input
-                    id="garden-name"
-                    placeholder="e.g., Backyard Garden"
+                    id="garden-size"
+                    placeholder="e.g., 20x40 feet"
+                    value={size}
+                    onChange={(e) => setSize(e.target.value)}
+                    required
                   />
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sun className="h-5 w-5 text-primary-600" />
+                Sunlight Conditions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
-                  <Select>
+                  <Label htmlFor="sun-exposure">Sun Exposure</Label>
+                  <Select value={sunlight} onValueChange={setSunlight} required>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select your location" />
+                      <SelectValue placeholder="Select sun exposure" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="indoor">Indoor</SelectItem>
-                      <SelectItem value="outdoor">Outdoor</SelectItem>
-                      <SelectItem value="greenhouse">Greenhouse</SelectItem>
-                      <SelectItem value="balcony">Balcony</SelectItem>
+                      <SelectItem value="full-sun">Full Sun (6+ hours)</SelectItem>
+                      <SelectItem value="partial-sun">Partial Sun (4-6 hours)</SelectItem>
+                      <SelectItem value="partial-shade">Partial Shade (2-4 hours)</SelectItem>
+                      <SelectItem value="full-shade">Full Shade (less than 2 hours)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
+            </CardContent>
+          </Card>
 
-              <div className="space-y-2">
-                <Label htmlFor="garden-size">Garden Size</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select garden size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="small">Small (under 100 sq ft)</SelectItem>
-                    <SelectItem value="medium">Medium (100-500 sq ft)</SelectItem>
-                    <SelectItem value="large">Large (500+ sq ft)</SelectItem>
-                  </SelectContent>
-                </Select>
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sprout className="h-5 w-5 text-primary-600" />
+                Garden Goals
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                {GARDEN_GOALS.map((goal) => (
+                  <div key={goal.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`goal-${goal.id}`}
+                      checked={goals.includes(goal.id)}
+                      onCheckedChange={() => handleGoalToggle(goal.id)}
+                    />
+                    <Label
+                      htmlFor={`goal-${goal.id}`}
+                      className="text-sm font-normal"
+                    >
+                      {goal.label}
+                    </Label>
+                  </div>
+                ))}
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Sun className="h-5 w-5 text-primary-600" />
-              Sunlight Conditions
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="sun-exposure">Sun Exposure</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select sun exposure" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="full-sun">Full Sun (6+ hours)</SelectItem>
-                    <SelectItem value="partial-sun">Partial Sun (4-6 hours)</SelectItem>
-                    <SelectItem value="partial-shade">Partial Shade (2-4 hours)</SelectItem>
-                    <SelectItem value="full-shade">Full Shade (less than 2 hours)</SelectItem>
-                  </SelectContent>
-                </Select>
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Thermometer className="h-5 w-5 text-primary-600" />
+                Soil Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="soil-type">Soil Type</Label>
+                  <Input
+                    id="soil-type"
+                    placeholder="e.g., sandy, clay, loamy"
+                    value={soilType}
+                    onChange={(e) => setSoilType(e.target.value)}
+                    required
+                  />
+                </div>
               </div>
+            </CardContent>
+          </Card>
 
-              <div className="space-y-2">
-                <Label htmlFor="sun-direction">Primary Sun Direction</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select sun direction" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="north">North</SelectItem>
-                    <SelectItem value="south">South</SelectItem>
-                    <SelectItem value="east">East</SelectItem>
-                    <SelectItem value="west">West</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Droplets className="h-5 w-5 text-primary-600" />
-              Watering System
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="watering-method">Watering Method</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select watering method" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="manual">Manual Watering</SelectItem>
-                    <SelectItem value="drip">Drip Irrigation</SelectItem>
-                    <SelectItem value="sprinkler">Sprinkler System</SelectItem>
-                    <SelectItem value="self-watering">Self-Watering Containers</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="water-source">Water Source</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select water source" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="tap">Tap Water</SelectItem>
-                    <SelectItem value="rain">Rain Water Collection</SelectItem>
-                    <SelectItem value="well">Well Water</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Thermometer className="h-5 w-5 text-primary-600" />
-              Climate Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="climate-zone">USDA Hardiness Zone</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your zone" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Array.from({ length: 13 }, (_, i) => (
-                      <SelectItem key={i} value={`zone-${i + 1}`}>
-                        Zone {i + 1}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="soil-type">Soil Type</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select soil type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="clay">Clay</SelectItem>
-                    <SelectItem value="sandy">Sandy</SelectItem>
-                    <SelectItem value="loamy">Loamy</SelectItem>
-                    <SelectItem value="silty">Silty</SelectItem>
-                    <SelectItem value="peaty">Peaty</SelectItem>
-                    <SelectItem value="chalky">Chalky</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="space-y-2">
-          <Label htmlFor="notes">Additional Notes</Label>
-          <Textarea
-            id="notes"
-            placeholder="Any additional information about your garden setup..."
-            className="min-h-[100px]"
-          />
-        </div>
-
-        <div className="mt-8 flex justify-end">
-          <Button className="px-8">
-            Save Garden Setup
-          </Button>
-        </div>
+          <div className="mt-8 flex justify-end">
+            <Button type="submit" className="px-8" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating garden...
+                </>
+              ) : (
+                'Save Garden Setup'
+              )}
+            </Button>
+          </div>
+        </form>
       </div>
     </div>
   )
