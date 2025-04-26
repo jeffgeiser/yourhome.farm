@@ -1,18 +1,12 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Leaf, Calendar, Droplets, Sun, ArrowRight } from 'lucide-react';
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
       <section className="relative h-[80vh] flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/images/garden-bg.jpg')] bg-cover bg-center opacity-20" />
-        </div>
-        <div className="container mx-auto px-4 z-10 text-center">
+        <div className="container mx-auto px-4 text-center">
           <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
             Grow Your Garden
             <span className="text-green-600"> Smarter</span>
@@ -24,7 +18,6 @@ export default function Home() {
             <Button asChild size="lg" className="bg-green-600 hover:bg-green-700 text-white">
               <Link href="/signup">
                 Get Started
-                <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
@@ -43,47 +36,26 @@ export default function Home() {
             Everything You Need to Grow
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-              <CardHeader>
-                <div className="bg-green-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                  <Leaf className="h-6 w-6 text-green-600" />
-                </div>
-                <CardTitle>Plant Management</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  Track all your plants in one place. Get personalized care instructions and growth tracking.
-                </p>
-              </CardContent>
-            </Card>
+            <div className="p-6 bg-white rounded-lg shadow-lg">
+              <h3 className="text-xl font-semibold mb-4">Plant Management</h3>
+              <p className="text-gray-600">
+                Track all your plants in one place. Get personalized care instructions and growth tracking.
+              </p>
+            </div>
 
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-              <CardHeader>
-                <div className="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                  <Calendar className="h-6 w-6 text-blue-600" />
-                </div>
-                <CardTitle>Smart Scheduling</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  Never miss a watering or fertilizing schedule. Get AI-powered care reminders.
-                </p>
-              </CardContent>
-            </Card>
+            <div className="p-6 bg-white rounded-lg shadow-lg">
+              <h3 className="text-xl font-semibold mb-4">Smart Scheduling</h3>
+              <p className="text-gray-600">
+                Never miss a watering or fertilizing schedule. Get AI-powered care reminders.
+              </p>
+            </div>
 
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-              <CardHeader>
-                <div className="bg-amber-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                  <Droplets className="h-6 w-6 text-amber-600" />
-                </div>
-                <CardTitle>Weather Alerts</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  Get notified about weather conditions that might affect your plants.
-                </p>
-              </CardContent>
-            </Card>
+            <div className="p-6 bg-white rounded-lg shadow-lg">
+              <h3 className="text-xl font-semibold mb-4">Weather Alerts</h3>
+              <p className="text-gray-600">
+                Get notified about weather conditions that might affect your plants.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -100,7 +72,6 @@ export default function Home() {
           <Button asChild size="lg" className="bg-green-600 hover:bg-green-700 text-white">
             <Link href="/signup">
               Start Your Garden Journey
-              <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
         </div>
