@@ -8,341 +8,277 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/components/ui/use-toast'
 import { Loader2, SendHorizonal, MessageSquare, Upload, Plane as Plant } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
+import { Search, MapPin, Users, Share2, Heart, MessageCircle } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { CommunityPost, CommunityComment, UserPlant } from '@/types'
 
-interface FeedbackItem {
+interface Plant {
   id: string;
-  user_id: string;
-  user_plant_id: string;
-  comment: string;
-  date: string;
-  photo: string | null;
-  users: {
-    email: string;
-  };
-  user_plants: {
-    plants: {
-      name: string;
-    };
-  };
+  name: string;
 }
 
-export default function CommunityPage() {
-  const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([])
-  const [userPlants, setUserPlants] = useState<{id: string, plant_name: string}[]>([])
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [comment, setComment] = useState('')
-  const [photoUrl, setPhotoUrl] = useState('')
-  const [selectedPlant, setSelectedPlant] = useState('')
-  const { user } = useSupabase()
-  const { toast } = useToast()
-  const router = useRouter()
+interface GardenProfile {
+  username: string;
+  avatar_url: string | null;
+  location?: string;
+}
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      // Get community feedback
-      const { data: feedbackData, error: feedbackError } = await supabase
-        .from('feedback')
+interface CommunityPost {
+  id: string;
+  content: string;
+  image_url?: string;
+  created_at: string;
+  likes_count: number;
+  garden_profiles: GardenProfile;
+  plants: Plant;
+}
+
+interface CommunityComment {
+  id: string;
+  content: string;
+  created_at: string;
+  garden_profiles: GardenProfile;
+}
+
+export default async function CommunityPage() {
+  const supabase = createServerComponentClient({ cookies })
+  
+  // Check if user is logged in
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  // If not logged in, redirect to login
+  if (!user) {
+    redirect('/login')
+  }
+
+  // Get user's profile
+  const { data: profile, error: profileError } = await supabase
+    .from('garden_profiles')
+    .select('*')
+    .eq('user_id', user.id)
+    .single()
+
+  if (profileError) throw profileError
+
+  // Get user's plants for the dropdown
+  const { data: plants, error: plantError } = await supabase
+    .from('plants')
+    .select(`
+      id,
+      name
+    `)
+    .eq('garden_profile_id', user.id)
+
+  if (plantError) throw plantError
+
+  const formattedPlants = (plants || []).map((plant: Plant) => ({
+    id: plant.id,
+    plant_name: plant.name || 'Unknown plant'
+  }))
+
+  // Get community posts
+  const { data: posts, error: postsError } = await supabase
+    .from('community_posts')
+    .select(`
+      *,
+      garden_profiles (
+        username,
+        avatar_url
+      ),
+      plants (
+        name
+      )
+    `)
+    .order('created_at', { ascending: false })
+
+  if (postsError) throw postsError
+
+  // Get comments for each post
+  const postsWithComments = await Promise.all(
+    (posts || []).map(async (post: CommunityPost) => {
+      const { data: comments, error: commentsError } = await supabase
+        .from('community_comments')
         .select(`
           *,
-          users (email),
-          user_plants (
-            *,
-            plants (name)
+          garden_profiles (
+            username,
+            avatar_url
           )
         `)
-        .order('date', { ascending: false });
-        
-      if (feedbackError) throw feedbackError;
-      setFeedbackItems(feedbackData || []);
-      
-      // If user is logged in, get their plants for the dropdown
-      if (user) {
-        const { data: plantData, error: plantError } = await supabase
-          .from('user_plants')
-          .select(`
-            id,
-            plants (name)
-          `)
-          .eq('garden_profile_id', 'garden_profile_id.user_id', user.id);
-          
-        if (plantError) throw plantError;
-        
-        const formattedPlants = (plantData || []).map(item => ({
-          id: item.id,
-          plant_name: item.plants?.name || 'Unknown plant'
-        }));
-        
-        setUserPlants(formattedPlants);
-      }
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Error loading community data',
-        description: error.message,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+        .eq('post_id', post.id)
+        .order('created_at', { ascending: true })
 
-  useEffect(() => {
-    fetchData();
-  }, [user, toast]);
-
-  const handleSubmitFeedback = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!user) {
-      toast({
-        variant: 'destructive',
-        title: 'Authentication required',
-        description: 'Please log in to post feedback.',
-      });
-      router.push('/login');
-      return;
-    }
-    
-    if (!comment.trim()) {
-      toast({
-        variant: 'destructive',
-        title: 'Comment required',
-        description: 'Please enter a comment.',
-      });
-      return;
-    }
-    
-    if (!selectedPlant) {
-      toast({
-        variant: 'destructive',
-        title: 'Plant selection required',
-        description: 'Please select a plant.',
-      });
-      return;
-    }
-    
-    setSubmitting(true);
-    
-    try {
-      const { data, error } = await supabase
-        .from('feedback')
-        .insert({
-          user_id: user.id,
-          user_plant_id: selectedPlant,
-          comment: comment.trim(),
-          date: new Date().toISOString(),
-          photo: photoUrl.trim() || null,
-        })
-        .select();
-        
-      if (error) throw error;
-      
-      toast({
-        title: 'Feedback posted',
-        description: 'Your feedback has been shared with the community.',
-      });
-      
-      // Reset form
-      setComment('');
-      setPhotoUrl('');
-      setSelectedPlant('');
-      
-      // Refresh data
-      await fetchData();
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Error posting feedback',
-        description: error.message,
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
+      if (commentsError) throw commentsError
+      return { ...post, comments: comments || [] }
+    })
+  )
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-[#333333]">Community Garden</h1>
+    <div className="container mx-auto py-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Community Garden</h1>
+        <Button asChild>
+          <Link href="/community/new-post">New Post</Link>
+        </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Left Column - Search and Filters */}
+        <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">Community Posts</CardTitle>
-              <CardDescription>
-                Share and learn from other gardeners in the community
-              </CardDescription>
+              <CardTitle>Search & Filter</CardTitle>
             </CardHeader>
             <CardContent>
-              {loading ? (
-                <div className="flex justify-center items-center py-12">
-                  <Loader2 className="w-8 h-8 animate-spin text-[#4CAF50]" />
+              <div className="space-y-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    placeholder="Search posts..."
+                    className="pl-10"
+                  />
                 </div>
-              ) : feedbackItems.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
-                  <MessageSquare className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-                  <p>No community posts yet. Be the first to share!</p>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filter by plant" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {formattedPlants.map((plant: { id: string; plant_name: string }) => (
+                      <SelectItem key={plant.id} value={plant.id.toString()}>
+                        {plant.plant_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* User Profile Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Your Profile</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center space-x-4">
+                <Avatar>
+                  <AvatarImage src={profile?.avatar_url || undefined} />
+                  <AvatarFallback>{profile?.username?.[0]?.toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <h3 className="font-semibold">{profile?.username}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {profile?.location ? (
+                      <span className="flex items-center">
+                        <MapPin className="w-4 h-4 mr-1" />
+                        {profile.location}
+                      </span>
+                    ) : 'No location set'}
+                  </p>
                 </div>
-              ) : (
-                <div className="space-y-6">
-                  {feedbackItems.map((item) => (
-                    <div key={item.id} className="border rounded-lg p-4 bg-white">
-                      <div className="flex items-start gap-3">
-                        <Avatar>
-                          <AvatarFallback className="bg-[#4CAF50] text-white">
-                            {item.users?.email.charAt(0).toUpperCase() || 'U'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="space-y-2 flex-1">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <p className="font-medium text-gray-900">
-                                {item.users?.email.split('@')[0] || 'Anonymous'}
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                {formatDate(item.date, 'PPp')}
-                              </p>
-                            </div>
-                            <Badge variant="outline" className="flex items-center gap-1">
-                              <Plant className="h-3 w-3" />
-                              {item.user_plants?.plants?.name || 'Plant'}
-                            </Badge>
-                          </div>
-                          <p className="text-gray-700">{item.comment}</p>
-                          {item.photo && (
-                            <div className="mt-3 rounded-md overflow-hidden">
-                              <img
-                                src={item.photo}
-                                alt="Feedback photo"
-                                className="w-full h-auto max-h-[300px] object-cover"
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              </div>
             </CardContent>
           </Card>
         </div>
-        
-        <div>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl">Share Your Experience</CardTitle>
-              <CardDescription>
-                Post your gardening tips, questions, or success stories
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {!user ? (
-                <div className="text-center py-6">
-                  <p className="text-gray-600 mb-4">
-                    Please log in to share your experiences
-                  </p>
-                  <Button asChild className="bg-[#4CAF50] hover:bg-green-700">
-                    <Link href="/login">Log In</Link>
-                  </Button>
-                </div>
-              ) : userPlants.length === 0 ? (
-                <div className="text-center py-6">
-                  <p className="text-gray-600 mb-4">
-                    Add a plant to your garden before posting
-                  </p>
-                  <Button asChild className="bg-[#4CAF50] hover:bg-green-700">
-                    <Link href="/plant_management">Add Plants</Link>
-                  </Button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmitFeedback} className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Select Plant</label>
-                    <select
-                      className="w-full rounded-md border border-gray-300 p-2"
-                      value={selectedPlant}
-                      onChange={(e) => setSelectedPlant(e.target.value)}
-                      required
-                    >
-                      <option value="">Select a plant</option>
-                      {userPlants.map((plant) => (
-                        <option key={plant.id} value={plant.id}>
-                          {plant.plant_name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Your Comment</label>
-                    <Textarea
-                      placeholder="Share your gardening experience, tips, or ask questions..."
-                      value={comment}
-                      onChange={(e) => setComment(e.target.value)}
-                      className="min-h-[120px]"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">
-                      Photo URL (Optional)
-                    </label>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="url"
-                        placeholder="https://example.com/your-plant-image.jpg"
-                        value={photoUrl}
-                        onChange={(e) => setPhotoUrl(e.target.value)}
-                      />
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        size="icon"
-                        className="flex-shrink-0"
-                      >
-                        <Upload className="h-4 w-4" />
-                        <span className="sr-only">Upload</span>
+
+        {/* Middle Column - Posts */}
+        <div className="md:col-span-2 space-y-6">
+          <Tabs defaultValue="all">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="all">All Posts</TabsTrigger>
+              <TabsTrigger value="following">Following</TabsTrigger>
+              <TabsTrigger value="popular">Popular</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="all" className="space-y-6">
+              {postsWithComments.map((post: CommunityPost & { comments: CommunityComment[] }) => (
+                <Card key={post.id}>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <Avatar>
+                          <AvatarImage src={post.garden_profiles?.avatar_url || undefined} />
+                          <AvatarFallback>{post.garden_profiles?.username?.[0]?.toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h3 className="font-semibold">{post.garden_profiles?.username}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {post.plants?.name && (
+                              <Badge variant="outline" className="mr-2">
+                                {post.plants.name}
+                              </Badge>
+                            )}
+                            {new Date(post.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm">
+                        <Share2 className="w-4 h-4" />
                       </Button>
                     </div>
-                    <p className="text-xs text-gray-500">
-                      Link to a photo of your garden or plant
-                    </p>
-                  </div>
-                  
-                  <Button
-                    type="submit"
-                    className="w-full bg-[#4CAF50] hover:bg-green-700"
-                    disabled={submitting}
-                  >
-                    {submitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Posting...
-                      </>
-                    ) : (
-                      <>
-                        <SendHorizonal className="mr-2 h-4 w-4" />
-                        Post to Community
-                      </>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="mb-4">{post.content}</p>
+                    {post.image_url && (
+                      <img
+                        src={post.image_url}
+                        alt="Post image"
+                        className="rounded-lg w-full h-64 object-cover mb-4"
+                      />
                     )}
-                  </Button>
-                </form>
-              )}
-            </CardContent>
-          </Card>
+                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                      <Button variant="ghost" size="sm">
+                        <Heart className="w-4 h-4 mr-2" />
+                        {post.likes_count || 0}
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        <MessageCircle className="w-4 h-4 mr-2" />
+                        {post.comments?.length || 0}
+                      </Button>
+                    </div>
+                    
+                    {/* Comments Section */}
+                    <div className="mt-4 space-y-4">
+                      <Separator />
+                      <ScrollArea className="h-[200px]">
+                        {post.comments?.map((comment: CommunityComment) => (
+                          <div key={comment.id} className="flex items-start space-x-4 py-2">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={comment.garden_profiles?.avatar_url || undefined} />
+                              <AvatarFallback>{comment.garden_profiles?.username?.[0]?.toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between">
+                                <h4 className="font-medium">{comment.garden_profiles?.username}</h4>
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(comment.created_at).toLocaleDateString()}
+                                </span>
+                              </div>
+                              <p className="text-sm">{comment.content}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </ScrollArea>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
-  );
+  )
 }
