@@ -29,4 +29,14 @@ export interface CommunityComment {
 export interface UserPlant {
   id: string;
   plant_name: string;
-} 
+}
+
+export type WeatherCondition = 
+  | 'sunny'
+  | 'partly-cloudy'
+  | 'cloudy'
+  | 'rainy'
+  | 'thunderstorm'
+  | 'snowy'
+  | 'foggy'
+  | 'windy'; 
