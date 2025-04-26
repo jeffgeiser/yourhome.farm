@@ -78,7 +78,7 @@ export default function PlantManagementPage() {
   const searchParams = useSearchParams()
   
   useEffect(() => {
-    const gardenId = searchParams.get('garden')
+    const gardenId = searchParams?.get('garden')
     if (gardenId) {
       setSelectedGarden(gardenId)
     }
