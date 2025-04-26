@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Search, Filter } from 'lucide-react';
+import { Plus, Search, Filter, Sprout } from 'lucide-react';
 import Link from 'next/link';
 import useGardenStore from '../store/useGardenStore';
 import PlantCard from '../components/garden/PlantCard';
