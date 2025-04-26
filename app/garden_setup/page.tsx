@@ -74,12 +74,14 @@ export default function GardenSetup() {
     setLoading(true)
     
     try {
+      const formattedGoals = goals.map(goal => goal.trim()).filter(Boolean)
+      
       await createGardenProfile(user.id, {
         name: name.trim(),
         size: size.trim(),
         location: location.trim(),
         sunlight,
-        goals,
+        goals: formattedGoals,
         soil_type: soilType.trim(),
       })
       
