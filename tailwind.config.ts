@@ -61,6 +61,9 @@ const config: Config = {
           '5': 'hsl(var(--chart-5))',
         },
       },
+      backgroundColor: {
+        DEFAULT: 'hsl(var(--background))',
+      },
       keyframes: {
         'accordion-down': {
           from: {
