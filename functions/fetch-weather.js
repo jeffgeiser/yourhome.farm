@@ -1,6 +1,6 @@
 // This Netlify serverless function fetches weather data and creates alerts
 
-import { createClient } from 'npm:@supabase/supabase-js@2.31.0';
+import { createClient } from '@supabase/supabase-js';
 
 // Headers for CORS
 const corsHeaders = {

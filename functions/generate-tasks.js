@@ -1,7 +1,7 @@
 // This Netlify serverless function generates AI tasks for plants
 
-import { Configuration, OpenAIApi } from 'npm:openai@4.6.0';
-import { createClient } from 'npm:@supabase/supabase-js@2.31.0';
+import { Configuration, OpenAIApi } from 'openai';
+import { createClient } from '@supabase/supabase-js';
 
 // Headers for CORS
 const corsHeaders = {
