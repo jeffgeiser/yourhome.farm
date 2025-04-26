@@ -74,9 +74,9 @@ export default function GardenSetup() {
     setLoading(true)
     
     try {
-      const formattedGoals = goals.map(goal => goal.trim()).filter(Boolean)
+      const formattedGoals = goals.length > 0 ? goals : ['general']
       
-      await createGardenProfile(user.id, {
+      const { data, error } = await createGardenProfile(user.id, {
         name: name.trim(),
         size: size.trim(),
         location: location.trim(),
@@ -84,6 +84,10 @@ export default function GardenSetup() {
         goals: formattedGoals,
         soil_type: soilType.trim(),
       })
+
+      if (error) {
+        throw error
+      }
       
       toast({
         title: 'Garden profile created!',
