@@ -91,11 +91,11 @@ export default function CalendarView({ tasks = [], alerts = [], plantings = [] }
   }
   
   // Custom CSS for the day cells
-  const dayClassName = (date: Date) => {
-    const counts = getEventCounts(date)
-    const hasAnyEvent = counts.tasks > 0 || counts.alerts > 0 || counts.plantings > 0
-    
-    return hasAnyEvent ? 'has-events' : ''
+  const dayClassName = (date: Date): string => {
+    const dateStr = date.toISOString().split('T')[0];
+    const hasEvents = tasks.some(task => task.due_date === dateStr) || 
+                     plantings.some(plant => plant.planting_date === dateStr);
+    return hasEvents ? 'has-events' : '';
   }
 
   // Custom day content to show indicators
@@ -179,7 +179,7 @@ export default function CalendarView({ tasks = [], alerts = [], plantings = [] }
                 }
               }}
               classNames={{
-                day: (date) => dayClassName(date)
+                day: dayClassName as unknown as string
               }}
               components={{
                 DayContent: ({ date }) => dayContent(date)
