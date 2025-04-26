@@ -1,7 +1,7 @@
 import React from 'react';
 import { CalendarEvent } from '../../types';
 import { Calendar, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import EventCard from '../calendar/EventCard';
 import useGardenStore from '../../store/useGardenStore';
 
@@ -24,7 +24,7 @@ const UpcomingEventsWidget: React.FC<UpcomingEventsWidgetProps> = ({ events }) =
           <Calendar className="h-5 w-5 text-primary-600" />
           <h3 className="ml-2 text-lg font-medium text-gray-900">Upcoming Tasks</h3>
         </div>
-        <Link to="/calendar" className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center">
+        <Link href="/calendar" className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center">
           View All
           <ChevronRight className="h-4 w-4 ml-1" />
         </Link>

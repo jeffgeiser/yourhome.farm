@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Search, Filter } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import useGardenStore from '../store/useGardenStore';
 import PlantCard from '../components/garden/PlantCard';
 
@@ -40,7 +40,7 @@ const Gardens: React.FC = () => {
           </p>
         </div>
         <div className="mt-4 sm:mt-0">
-          <Link to="/gardens/new" className="btn btn-primary flex items-center">
+          <Link href="/gardens/new" className="btn btn-primary flex items-center">
             <Plus className="h-5 w-5 mr-2" />
             New Garden
           </Link>
@@ -123,7 +123,7 @@ const Gardens: React.FC = () => {
         ))}
         
         {/* Add Plant Card */}
-        <Link to="/plants/new" className="flex items-center justify-center h-full min-h-[15rem] bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+        <Link href="/plants/new" className="flex items-center justify-center h-full min-h-[15rem] bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
           <div className="text-center p-6">
             <div className="mx-auto h-12 w-12 rounded-full bg-primary-50 flex items-center justify-center">
               <Plus className="h-6 w-6 text-primary-600" />
@@ -148,7 +148,7 @@ const Gardens: React.FC = () => {
               : "Get started by adding a new plant to your garden"}
           </p>
           <div className="mt-6">
-            <Link to="/plants/new" className="btn btn-primary">
+            <Link href="/plants/new" className="btn btn-primary">
               <Plus className="h-5 w-5 mr-2" />
               Add New Plant
             </Link>

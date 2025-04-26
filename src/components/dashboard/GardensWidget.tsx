@@ -1,7 +1,7 @@
 import React from 'react';
 import { Garden } from '../../types';
 import { Sprout, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import useGardenStore from '../../store/useGardenStore';
 
 interface GardensWidgetProps {
@@ -22,7 +22,7 @@ const GardensWidget: React.FC<GardensWidgetProps> = ({ gardens }) => {
           <Sprout className="h-5 w-5 text-primary-600" />
           <h3 className="ml-2 text-lg font-medium text-gray-900">Your Gardens</h3>
         </div>
-        <Link to="/gardens" className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center">
+        <Link href="/gardens" className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center">
           View All
           <ChevronRight className="h-4 w-4 ml-1" />
         </Link>
@@ -75,7 +75,7 @@ const GardensWidget: React.FC<GardensWidgetProps> = ({ gardens }) => {
               </div>
               
               <div className="mt-4">
-                <Link to={`/gardens/${garden.id}`} className="text-primary-600 hover:text-primary-700 text-sm font-medium">
+                <Link href={`/gardens/${garden.id}`} className="text-primary-600 hover:text-primary-700 text-sm font-medium">
                   View Garden
                 </Link>
               </div>
@@ -84,7 +84,7 @@ const GardensWidget: React.FC<GardensWidgetProps> = ({ gardens }) => {
         </div>
         
         <div className="mt-4">
-          <Link to="/gardens/new" className="btn btn-outline w-full flex items-center justify-center">
+          <Link href="/gardens/new" className="btn btn-outline w-full flex items-center justify-center">
             <Sprout className="h-4 w-4 mr-2" />
             Create New Garden
           </Link>

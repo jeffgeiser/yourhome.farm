@@ -1,6 +1,6 @@
 import React from 'react';
 import { Lightbulb, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 const RecommendationsWidget: React.FC = () => {
   const recommendations = [
@@ -31,7 +31,7 @@ const RecommendationsWidget: React.FC = () => {
           <Lightbulb className="h-5 w-5 text-primary-600" />
           <h3 className="ml-2 text-lg font-medium text-gray-900">AI Recommendations</h3>
         </div>
-        <Link to="/recommendations" className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center">
+        <Link href="/recommendations" className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center">
           View All
           <ChevronRight className="h-4 w-4 ml-1" />
         </Link>
