@@ -3,8 +3,10 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  output: 'standalone',
+  distDir: 'out',
   images: {
-    domains: ['yourhome.farm'],
+    domains: ['supabase.co'],
   },
   webpack: (config, { dev, isServer }) => {
     if (dev && !isServer) {
