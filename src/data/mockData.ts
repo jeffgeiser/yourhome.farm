@@ -1,4 +1,4 @@
-import { Plant, Garden, CalendarEvent, WeatherAlert, WeatherForecast, PlantRecommendation } from '../types';
+import { Plant, Garden, CalendarEvent, WeatherAlert, WeatherForecast, PlantRecommendation, WeatherCondition } from '../types';
 import { addDays, format } from 'date-fns';
 
 // Mock Plants Data
